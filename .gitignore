@@ -1,8 +1,83 @@
+# Created by https://www.toptal.com/developers/gitignore/api/c,c++,unity
+# Edit at https://www.toptal.com/developers/gitignore?templates=c,c++,unity
+
+### C ###
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+### C++ ###
+# Prerequisites
+
+# Compiled Object files
+*.slo
+
+# Precompiled Headers
+
+# Compiled Dynamic libraries
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+
+# Executables
+
+### Unity ###
 # This .gitignore file should be placed at the root of your Unity project directory
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
-#
-.utmp/
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
@@ -10,11 +85,6 @@
 /[Bb]uilds/
 /[Ll]ogs/
 /[Uu]ser[Ss]ettings/
-*.log
-
-# By default unity supports Blender asset imports, *.blend1 blender files do not need to be commited to version control.
-*.blend1
-*.blend1.meta
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
@@ -48,7 +118,6 @@ ExportedObj/
 *.pidb
 *.booproj
 *.svd
-*.pdb
 *.mdb
 *.opendb
 *.VC.db
@@ -65,8 +134,6 @@ sysinfo.txt
 *.apk
 *.aab
 *.unitypackage
-*.unitypackage.meta
-*.app
 
 # Crashlytics generated file
 crashlytics-build.properties
@@ -78,8 +145,4 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
-# Visual Scripting auto-generated files
-/[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Flow/UnitOptions.db
-/[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Flow/UnitOptions.db.meta
-/[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Core/Property Providers
-/[Aa]ssets/Unity.VisualScripting.Generated/VisualScripting.Core/Property Providers.meta
+# End of https://www.toptal.com/developers/gitignore/api/c,c++,unity
