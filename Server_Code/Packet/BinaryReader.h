@@ -22,4 +22,7 @@ public:
     PacketHeader ReadHeader();
 
     bool EndOfBuffer() const { return offset >= size; }
+
+    inline const char* GetBuffer() const { return buffer; }
+    inline size_t GetBufferSize() const { return size; }
 };

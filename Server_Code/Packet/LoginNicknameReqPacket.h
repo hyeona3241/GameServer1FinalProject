@@ -1,8 +1,4 @@
 #pragma once
-
-#include "BinaryWriter.h"
-#include "BinaryReader.h"
-
 #include "LoginPacket.h"
 
 // PacketType : LOGIN_NICKNAME_REQ
@@ -10,6 +6,7 @@
 class LoginNicknameReqPacket :public LoginPacket
 {
 public:
+    LoginNicknameReqPacket();
     LoginNicknameReqPacket(const std::string& nickname);
 
     std::vector<char> Serialize() const override;

@@ -39,3 +39,7 @@ void BinaryWriter::WriteHeader(const PacketHeader& header) {
     WriteUInt16(static_cast<uint16_t>(header.type));
     WriteUInt16(header.size);
 }
+
+void BinaryWriter::WriteHeader(EPacketType type, uint16_t size) {
+    WriteHeader(PacketHeader(type, size));
+}

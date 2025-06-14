@@ -32,19 +32,19 @@ std::vector<char> LoginNicknameAckPacket::Serialize() const
     return writer.GetBuffer();
 }
 
-void LoginNicknameAckPacket::Deserialize(const char* buffer, size_t size)
+void LoginNicknameAckPacket::Deserialize(const char* buffer, size_t bufferSize)
 {
     // 예외 처리 : 버퍼가 최소 크기보다 작을 경우
-    if (!buffer || size < sizeof(PacketHeader) + sizeof(uint8_t)) {
+    if (!buffer || bufferSize < sizeof(PacketHeader) + sizeof(uint8_t)) {
         throw std::runtime_error("Invalid buffer for LoginNicknameAckPacket.");
     }
 
-    BinaryReader reader(buffer, size);
+    BinaryReader reader(buffer, bufferSize);
 
     header = reader.ReadHeader();
 
     // 예외 처리: header에 기록된 size와 실제 size가 다르면 조작 또는 손상
-    if (header.size != size) {
+    if (header.size != bufferSize) {
         throw std::runtime_error("Packet size mismatch.");
     }
 
@@ -52,7 +52,7 @@ void LoginNicknameAckPacket::Deserialize(const char* buffer, size_t size)
 
     if (!isDuplicate) {
         // 예외 처리 : 중복이 아닌데 UID가 누락되었을 경우
-        if (size < sizeof(PacketHeader) + sizeof(uint8_t) + sizeof(uint32_t)) {
+        if (bufferSize < sizeof(PacketHeader) + sizeof(uint8_t) + sizeof(uint32_t)) {
             throw std::runtime_error("Buffer too small for UID.");
         }
 

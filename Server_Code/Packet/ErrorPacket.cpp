@@ -50,3 +50,24 @@ void ErrorPacket::Deserialize(const char* buffer, size_t bufferSize)
     if (message.empty() || message.length() > MAX_ERROR_MSG_SIZE)
         throw std::runtime_error("Malformed error message data.");
 }
+
+bool ErrorPacket::IsValid(const char* buffer) const {
+    if (!buffer)
+        throw std::invalid_argument("ErrorPacket::IsValid: buffer is null");
+
+    BinaryReader reader(buffer, MAX_ERROR_MSG_SIZE + sizeof(PacketHeader) + sizeof(uint16_t) + 1);
+
+    PacketHeader h = reader.ReadHeader();
+
+    if (h.type != EPacketType::ERROR_MSG)
+        throw std::runtime_error("IsValid: Packet type mismatch");
+
+    // 메시지 검증
+    const std::string msg = reader.ReadString();
+    if (msg.empty())
+        throw std::runtime_error("IsValid: Error message is empty");
+    if (msg.length() > MAX_ERROR_MSG_SIZE)
+        throw std::runtime_error("IsValid: Error message exceeds max length");
+
+    return true;
+}

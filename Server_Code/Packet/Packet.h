@@ -4,6 +4,9 @@
 #include <iostream>
 #include <vector>
 
+#include "BinaryWriter.h"
+#include "BinaryReader.h"
+
 using namespace std;
 
 enum class EPacketType : uint16_t {
@@ -14,8 +17,9 @@ enum class EPacketType : uint16_t {
     LOGIN_NICKNAME_ACK = 1002, 
     LOGIN_MODEL_SELECT_REQ = 1003,
     LOGIN_MODEL_SELECT_ACK = 1004, 
-    LOGIN_SUCCESS_ACK = 1005, 
-    LOGOUT_REQ = 1006,
+    LOGIN_FINALIZE_REQ = 1005,
+    LOGIN_SUCCESS_ACK = 1006,
+    LOGOUT_REQ = 1007,
 
     // 채팅 패킷: 2000~2999
     CHAT_SEND = 2001,
@@ -92,8 +96,7 @@ public:
     virtual vector<char> Serialize() const = 0;
     // 역직렬화: 바이너리 버퍼 -> Packet
     virtual void Deserialize(const char* buffer, size_t bufferSize) = 0;
-    // 패킷 크기 반환
-    virtual uint16_t GetSize() const = 0;
+    
     // 주어진 버퍼가 유효한지 확인
     virtual bool IsValid(const char* buffer) const = 0;
 

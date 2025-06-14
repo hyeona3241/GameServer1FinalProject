@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Users\pha21\Documents\GitHub\GameServer1FinalProject\Server\x64\Debug\ChatServer.exe</FullPath>
+      <FullPath>C:\Users\pha21\Documents\GitHub\GameServer1FinalProject\Server_Code\x64\Debug\ChatServer.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

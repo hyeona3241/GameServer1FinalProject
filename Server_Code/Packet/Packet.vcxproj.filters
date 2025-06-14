@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="헤더 파일\LogIOPacket">
+      <UniqueIdentifier>{94111139-b68e-4f7e-b2d2-16ba66bd1832}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\LogIOPacket">
+      <UniqueIdentifier>{8d538674-722b-4bef-9172-98e57bf85dbe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Packet.h">
@@ -21,13 +27,7 @@
     <ClInclude Include="StringPacket.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="LoginPacket.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="ErrorPacket.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="LoginNicknameReqPacket.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="BinaryWriter.h">
@@ -36,8 +36,29 @@
     <ClInclude Include="BinaryReader.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="LoginFinalizeReqPacket.h">
+      <Filter>헤더 파일\LogIOPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="LoginModelSelectAckPacket.h">
+      <Filter>헤더 파일\LogIOPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="LoginModelSelectReqPacket.h">
+      <Filter>헤더 파일\LogIOPacket</Filter>
+    </ClInclude>
     <ClInclude Include="LoginNicknameAckPacket.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\LogIOPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="LoginNicknameReqPacket.h">
+      <Filter>헤더 파일\LogIOPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="LoginPacket.h">
+      <Filter>헤더 파일\LogIOPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="LoginSuccessAckPacket.h">
+      <Filter>헤더 파일\LogIOPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="LogoutReqPacket.h">
+      <Filter>헤더 파일\LogIOPacket</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -47,13 +68,7 @@
     <ClCompile Include="StringPacket.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="LoginPacket.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="ErrorPacket.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="LoginNicknameReqPacket.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="BinaryWriter.cpp">
@@ -62,8 +77,29 @@
     <ClCompile Include="BinaryReader.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="LoginFinalizeReqPacket.cpp">
+      <Filter>소스 파일\LogIOPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="LoginModelSelectAckPacket.cpp">
+      <Filter>소스 파일\LogIOPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="LoginModelSelectReqPacket.cpp">
+      <Filter>소스 파일\LogIOPacket</Filter>
+    </ClCompile>
     <ClCompile Include="LoginNicknameAckPacket.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\LogIOPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="LoginNicknameReqPacket.cpp">
+      <Filter>소스 파일\LogIOPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="LoginPacket.cpp">
+      <Filter>소스 파일\LogIOPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="LoginSuccessAckPacket.cpp">
+      <Filter>소스 파일\LogIOPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="LogoutReqPacket.cpp">
+      <Filter>소스 파일\LogIOPacket</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -130,9 +130,14 @@
     <ClInclude Include="BinaryReader.h" />
     <ClInclude Include="BinaryWriter.h" />
     <ClInclude Include="ErrorPacket.h" />
+    <ClInclude Include="LoginFinalizeReqPacket.h" />
+    <ClInclude Include="LoginModelSelectAckPacket.h" />
+    <ClInclude Include="LoginModelSelectReqPacket.h" />
     <ClInclude Include="LoginNicknameAckPacket.h" />
     <ClInclude Include="LoginNicknameReqPacket.h" />
     <ClInclude Include="LoginPacket.h" />
+    <ClInclude Include="LoginSuccessAckPacket.h" />
+    <ClInclude Include="LogoutReqPacket.h" />
     <ClInclude Include="Packet.h" />
     <ClInclude Include="StringPacket.h" />
   </ItemGroup>
@@ -140,9 +145,14 @@
     <ClCompile Include="BinaryReader.cpp" />
     <ClCompile Include="BinaryWriter.cpp" />
     <ClCompile Include="ErrorPacket.cpp" />
+    <ClCompile Include="LoginFinalizeReqPacket.cpp" />
+    <ClCompile Include="LoginModelSelectAckPacket.cpp" />
+    <ClCompile Include="LoginModelSelectReqPacket.cpp" />
     <ClCompile Include="LoginNicknameAckPacket.cpp" />
     <ClCompile Include="LoginNicknameReqPacket.cpp" />
     <ClCompile Include="LoginPacket.cpp" />
+    <ClCompile Include="LoginSuccessAckPacket.cpp" />
+    <ClCompile Include="LogoutReqPacket.cpp" />
     <ClCompile Include="Packet.cpp" />
     <ClCompile Include="StringPacket.cpp" />
   </ItemGroup>

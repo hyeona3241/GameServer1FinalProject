@@ -8,6 +8,3 @@ Packet::Packet(EPacketType type, uint16_t size) : header(type, size)
 {
 }
 
-Packet::~Packet()
-{
-}

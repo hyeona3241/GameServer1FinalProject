@@ -29,3 +29,28 @@ bool LoginPacket::IsValid() const
 	// 16자 까지만 허용
 	return !nickname.empty() && nickname.length() <= 16;
 }
+
+bool LoginPacket::IsValid(const char* buffer) const
+{
+    try {
+        BinaryReader reader(buffer, sizeof(PacketHeader));
+        PacketHeader h = reader.ReadHeader();
+
+        // 패킷 타입 검사 (이 클래스의 타입과 일치해야 함)
+        if (h.type != this->header.type)
+            throw std::runtime_error("Invalid packet type in buffer.");
+
+        // 전체 버퍼로 다시 검사
+        BinaryReader fullReader(buffer, h.size);
+        fullReader.ReadHeader(); // 다시 헤더 읽기
+
+        std::string nick = fullReader.ReadString();
+
+        // 닉네임이 1~16자 이내인지 검사
+        return !nick.empty() && nick.length() <= 16;
+    }
+    catch (...) {
+        return false;
+    }
+}
+

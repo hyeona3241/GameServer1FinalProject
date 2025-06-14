@@ -1,8 +1,4 @@
 #pragma once
-
-#include "BinaryWriter.h"
-#include "BinaryReader.h"
-
 #include "LoginPacket.h"
 
 
@@ -24,7 +20,7 @@ public:
     void SetUID(uint32_t id);
 
     std::vector<char> Serialize() const override;
-    void Deserialize(const char* buffer, size_t size) override;
+    void Deserialize(const char* buffer, size_t bufferSize) override;
 
     ~LoginNicknameAckPacket() override = default;
 };

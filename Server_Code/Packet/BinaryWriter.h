@@ -21,6 +21,7 @@ public:
     void WriteFloat(float value);
     void WriteString(const std::string& str); // null-terminated
     void WriteHeader(const PacketHeader& header);
+    void WriteHeader(EPacketType type, uint16_t size);
 
     const std::vector<char>& GetBuffer() const { return buffer; }
     size_t GetSize() const { return buffer.size(); }

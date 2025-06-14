@@ -1,5 +1,10 @@
 #include "LoginNicknameReqPacket.h"
 
+LoginNicknameReqPacket::LoginNicknameReqPacket()
+    : LoginPacket(EPacketType::LOGIN_NICKNAME_REQ)
+{
+}
+
 LoginNicknameReqPacket::LoginNicknameReqPacket(const std::string& nickname)
 	: LoginPacket(EPacketType::LOGIN_NICKNAME_REQ, nickname)
 {
