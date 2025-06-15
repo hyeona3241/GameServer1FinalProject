@@ -6,7 +6,7 @@ LoginSuccessAckPacket::LoginSuccessAckPacket(uint32_t uid, const std::string& ni
     : LoginPacket(EPacketType::LOGIN_SUCCESS_ACK, nickname), uid(uid)
 {
     header.size = static_cast<uint16_t>(
-        sizeof(PacketHeader) + sizeof(uint32_t) + nickname.length() + 1
+        sizeof(PacketHeader) + sizeof(uint32_t) + sizeof(uint16_t) + nickname.length()
         );
 }
 

@@ -3,11 +3,7 @@
 LoginNicknameAckPacket::LoginNicknameAckPacket(bool isDuplicate, uint32_t uid)
     : LoginPacket(EPacketType::LOGIN_NICKNAME_ACK), isDuplicate(isDuplicate), uid(uid)
 {
-    // 예외 처리 : UID가 0인데 중복이 아니면 잘못된 입력
-    if (!isDuplicate && uid == 0) {
-        throw std::invalid_argument("UID must be non-zero if nickname is not duplicate.");
-    }
-
+   
     // 패킷 크기 계산: UID는 닉네임 중복이 아닐 때만 포함됨
     header.size = sizeof(PacketHeader) + sizeof(uint8_t) + (isDuplicate ? 0 : sizeof(uint32_t));
 }
@@ -58,10 +54,6 @@ void LoginNicknameAckPacket::Deserialize(const char* buffer, size_t bufferSize)
 
         uid = reader.ReadUInt32();
 
-        // 예외 처리 : UID가 0일 경우 잘못된 UID
-        if (uid == 0) {
-            throw std::runtime_error("UID is zero in non-duplicate nickname.");
-        }
     }
     else {
         uid = 0; // 중복인 경우 UID 무효

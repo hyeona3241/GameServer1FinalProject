@@ -7,9 +7,10 @@ ErrorPacket::ErrorPacket(EErrorCode code, const std::string& message)
         throw std::length_error("Error message exceeds maximum allowed size.");
     }
 
-    // 패킷 전체 크기 계산 (헤더 + 에러 코드 + 메시지 + 널)
+    uint16_t byteLen = static_cast<uint16_t>(message.size());
     header.size = static_cast<uint16_t>(
-        sizeof(PacketHeader) + sizeof(EErrorCode) + message.length() + 1);
+        sizeof(PacketHeader) + sizeof(EErrorCode) + sizeof(uint16_t) + byteLen);
+
 }
 
 EErrorCode ErrorPacket::GetCode() const
@@ -66,8 +67,10 @@ bool ErrorPacket::IsValid(const char* buffer) const {
     const std::string msg = reader.ReadString();
     if (msg.empty())
         throw std::runtime_error("IsValid: Error message is empty");
-    if (msg.length() > MAX_ERROR_MSG_SIZE)
+
+    if (msg.size() > MAX_ERROR_MSG_SIZE)  // .size() = byte length for std::string
         throw std::runtime_error("IsValid: Error message exceeds max length");
+
 
     return true;
 }

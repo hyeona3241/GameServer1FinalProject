@@ -31,8 +31,9 @@ void BinaryWriter::WriteFloat(float value) {
 }
 
 void BinaryWriter::WriteString(const std::string& str) {
+    uint16_t len = static_cast<uint16_t>(str.length());
+    WriteUInt16(len); // 문자열 길이 먼저 기록
     buffer.insert(buffer.end(), str.begin(), str.end());
-    buffer.push_back('\0'); // null-terminator 포함
 }
 
 void BinaryWriter::WriteHeader(const PacketHeader& header) {

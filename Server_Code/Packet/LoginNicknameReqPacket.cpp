@@ -25,12 +25,14 @@ void LoginNicknameReqPacket::Deserialize(const char* buffer, size_t bufferSize)
 {
     BinaryReader reader(buffer, bufferSize);
 
-    header = reader.ReadHeader();
+    //header = reader.ReadHeader();
     nickname = reader.ReadString();
 
-    // 유효성 검사
-    if (nickname.empty() || nickname.size() > 16)
-    {
-        throw std::runtime_error("Invalid nickname received in LoginNicknameReqPacket");
-    }
+ 
+    std::cout << "[Deserialize] Nickname: '" << nickname << "' (" << nickname.length() << " chars)\n";
+
+
+    if (nickname.empty() || nickname.length() > 16 || nickname.size() > 255)
+        throw std::runtime_error("Invalid nickname in LoginNicknameReqPacket");
 }
+

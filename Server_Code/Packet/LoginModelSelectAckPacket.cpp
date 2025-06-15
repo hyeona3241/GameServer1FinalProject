@@ -20,11 +20,18 @@ LoginModelSelectAckPacket::LoginModelSelectAckPacket(bool isValid, uint8_t model
 
 std::vector<char> LoginModelSelectAckPacket::Serialize() const {
     BinaryWriter writer;
-    writer.WriteHeader(header);
+
+    // 패킷 전체 크기: Header(4) + isValid(1) + modelId(1) = 6
+    PacketHeader h = header;
+    h.size = sizeof(PacketHeader) + sizeof(uint8_t) + sizeof(uint8_t);
+
+    writer.WriteHeader(h); // 수정된 사이즈 포함하여 헤더 기록
     writer.WriteUInt8(static_cast<uint8_t>(isValidModel));
     writer.WriteUInt8(modelId);
+
     return writer.GetBuffer();
 }
+
 
 void LoginModelSelectAckPacket::Deserialize(const char* buffer, size_t bufferSize) {
     BinaryReader reader(buffer, bufferSize);

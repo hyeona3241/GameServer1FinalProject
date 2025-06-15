@@ -40,21 +40,30 @@ void PacketHandler::HandlePacket(SOCKET clientSocket, const PacketHeader& header
 void PacketHandler::HandleLoginNicknameReq(SOCKET clientSocket, BinaryReader& reader)
 {
     try {
-        LoginNicknameReqPacket req;
-        req.Deserialize(reader.GetBuffer(), reader.GetBufferSize());
+        std::string nickname = reader.ReadString();
 
-        const std::string& nickname = req.GetNickname();
+        if (nickname.empty() || nickname.length() > 16) {
+            throw std::invalid_argument("Invalid nickname");
+        }
 
         LoginNicknameAckPacket ack;
 
-        if (!SessionManager::GetInstance().IsNicknameDuplicate(nickname)) {
-            // 닉네임이 이미 존재하는 경우 → 중복 플래그 true
+        if (SessionManager::GetInstance().IsNicknameDuplicate(nickname)) {
             ack.SetIsDuplicate(true);
         }
         else {
-            // 사용 가능한 닉네임 → 중복 플래그 false, UID는 아직 부여하지 않음
             ack.SetIsDuplicate(false);
-            ack.SetUID(0);  // 규칙상 UID는 나중에 부여
+
+            // 세션 생성 및 UID 발급
+            UserSession session;
+            session.nickname = nickname;
+            session.socket = clientSocket;
+            session.modelId = 0; // 기본값
+
+            uint32_t uid = SessionManager::GetInstance().RegisterNewUser(session);
+            SessionManager::GetInstance().AddUser(clientSocket, session);
+
+            ack.SetUID(uid);
         }
 
         NetworkManager::GetInstance().SendPacket(clientSocket, ack.Serialize());
@@ -62,10 +71,15 @@ void PacketHandler::HandleLoginNicknameReq(SOCKET clientSocket, BinaryReader& re
     catch (const std::exception& e) {
         std::cerr << "[HandleLoginNicknameReq] Exception: " << e.what() << std::endl;
 
-        // 클라가 에러 패킷이 아닌 일반 응답 패킷을 기다리므로, 에러 패킷은 보내지 않음.
-        // 로그만 남기고 무시 or 종료
+        ErrorPacket error(EErrorCode::INVALID_NICKNAME, "Nickname must be 1~16 chars.");
+        NetworkManager::GetInstance().SendPacket(clientSocket, error.Serialize());
     }
 }
+
+
+
+
+
 
 
 void PacketHandler::HandleModelSelect(SOCKET clientSocket, BinaryReader& reader)
@@ -84,18 +98,27 @@ void PacketHandler::HandleModelSelect(SOCKET clientSocket, BinaryReader& reader)
             }
             else {
                 std::cerr << "[HandleModelSelect] 유저 세션을 찾을 수 없습니다." << std::endl;
-                isValid = false; // 유저 세션이 없으면 유효성 false로 응답
+                isValid = false;
             }
         }
 
         LoginModelSelectAckPacket ack(isValid, modelId);
-        NetworkManager::GetInstance().SendPacket(clientSocket, ack.Serialize());
+        std::vector<char> buffer = ack.Serialize();
+
+        // 전송할 바이트 로그 출력
+        std::cout << "[ModelSelectAck] Sending Packet (size = " << buffer.size() << "): ";
+        for (unsigned char c : buffer)
+            printf("%02X-", c);
+        std::cout << std::endl;
+
+        NetworkManager::GetInstance().SendPacket(clientSocket, buffer);
     }
     catch (const std::exception& e) {
         std::cerr << "[HandleModelSelect] Exception: " << e.what() << std::endl;
-        // 클라가 ACK 패킷을 기다리므로, 에러 패킷은 생략
+        //에러 패킷 추가
     }
 }
+
 
 
 void PacketHandler::HandleLoginFinalize(SOCKET clientSocket, BinaryReader& reader)
@@ -111,19 +134,22 @@ void PacketHandler::HandleLoginFinalize(SOCKET clientSocket, BinaryReader& reade
             return;
         }
 
-        // 2. UID 발급 및 등록
-        uint32_t uid = SessionManager::GetInstance().RegisterNewUser(*session);
+        // 2. UID 확인 후 응답
+        if (session->uid == 0) {
+            std::cerr << "[HandleLoginFinalize] UID가 할당되지 않은 세션입니다." << std::endl;
+            return;
+        }
 
-        // 3. 응답 패킷 전송
-        LoginSuccessAckPacket ack(uid, session->nickname);
+        // 3. 로그인 성공 응답 전송
+        LoginSuccessAckPacket ack(session->uid, session->nickname);
         NetworkManager::GetInstance().SendPacket(clientSocket, ack.Serialize());
 
-        std::cout << "[HandleLoginFinalize] 로그인 완료: UID = " << uid
+        std::cout << "[HandleLoginFinalize] 로그인 완료: UID = " << session->uid
             << ", 닉네임 = " << session->nickname << std::endl;
     }
     catch (const std::exception& e) {
         std::cerr << "[HandleLoginFinalize] Exception: " << e.what() << std::endl;
-    
+
         ErrorPacket error(EErrorCode::LOGIN_FAILED, "로그인 최종 단계에서 오류가 발생했습니다.");
         NetworkManager::GetInstance().SendPacket(clientSocket, error.Serialize());
     }
@@ -131,13 +157,12 @@ void PacketHandler::HandleLoginFinalize(SOCKET clientSocket, BinaryReader& reade
 
 
 
+
 void PacketHandler::HandleLogoutReq(SOCKET clientSocket, BinaryReader& reader)
 {
     try {
-        LogoutReqPacket req;
-        req.Deserialize(reader.GetBuffer(), reader.GetBufferSize());
-
-        uint32_t uid = req.GetUID();
+        // BinaryReader는 이미 헤더를 읽은 상태라고 가정
+        uint32_t uid = reader.ReadUInt32();  // UID 직접 추출
 
         // 세션 제거 시도
         bool success = SessionManager::GetInstance().RemoveUser(uid);
@@ -150,7 +175,6 @@ void PacketHandler::HandleLogoutReq(SOCKET clientSocket, BinaryReader& reader)
         else {
             std::cerr << "[HandleLogoutReq] 유저 정보 삭제 실패 - UID: " << uid << std::endl;
 
-            // 클라에 에러 패킷 보내는 것도 고려 가능
             ErrorPacket error(EErrorCode::INVALID_UID, "로그아웃 처리 중 UID 정보가 유효하지 않습니다.");
             NetworkManager::GetInstance().SendPacket(clientSocket, error.Serialize());
         }
@@ -162,4 +186,5 @@ void PacketHandler::HandleLogoutReq(SOCKET clientSocket, BinaryReader& reader)
         NetworkManager::GetInstance().SendPacket(clientSocket, error.Serialize());
     }
 }
+
 
