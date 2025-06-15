@@ -36,25 +36,8 @@ constexpr int INVALID_SOCKET = -1;
 // ==============================
 // 패킷 사용
 // ==============================
-enum class EPacketType : uint16_t {
-    None = 0,
 
-    // 로그인 관련: 1000번대
-    LOGIN_NICKNAME_REQ = 1001,
-    LOGIN_NICKNAME_ACK = 1002,
-    LOGIN_MODEL_SELECT_REQ = 1003,
-    LOGIN_MODEL_SELECT_ACK = 1004,
-    LOGIN_FINALIZE_REQ = 1005,
-    LOGIN_SUCCESS_ACK = 1006,
-    LOGOUT_REQ = 1007,
-
-    // 채팅 관련: 2000번대
-    CHAT_SEND = 2001,
-    CHAT_RECV = 2002,
-
-    // 시스템 메시지
-    ERROR_MSG = 9001
-};
+#include "PacketDef.h"
 
 
 
@@ -65,7 +48,6 @@ constexpr uint16_t SERVER_PORT = 9000;
 constexpr size_t MAX_CLIENTS = 4;
 constexpr size_t MAX_BUFFER_SIZE = 1024;
 constexpr size_t MAX_NICKNAME_LENGTH = 16;
-constexpr uint8_t MAX_MODEL_ID = 3;
 
 
 

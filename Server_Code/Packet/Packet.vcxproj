@@ -40,7 +40,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -139,6 +139,7 @@
     <ClInclude Include="LoginSuccessAckPacket.h" />
     <ClInclude Include="LogoutReqPacket.h" />
     <ClInclude Include="Packet.h" />
+    <ClInclude Include="PacketDef.h" />
     <ClInclude Include="StringPacket.h" />
   </ItemGroup>
   <ItemGroup>

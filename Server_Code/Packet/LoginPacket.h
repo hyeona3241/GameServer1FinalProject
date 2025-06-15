@@ -5,8 +5,6 @@
 #include <string>
 #include "Packet.h"
 
-constexpr uint8_t MAX_MODEL_ID = 3;
-
 class LoginPacket : public Packet
 {
 protected:

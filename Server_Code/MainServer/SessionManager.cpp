@@ -16,7 +16,7 @@ void SessionManager::AddUser(SOCKET socket, const UserSession& session)
     socketToUid[socket] = session.uid;
 }
 
-// 접속 종료된 유저 정보 모두 제거
+// 접속 종료된 유저 정보 모두 제거 (비정상 종료)
 void SessionManager::RemoveUser(SOCKET socket)
 {
     std::lock_guard<std::mutex> lock(sessionMutex);
@@ -30,6 +30,25 @@ void SessionManager::RemoveUser(SOCKET socket)
         }
         socketToUid.erase(sockIt);
     }
+}
+
+// 접속 종료된 유저 정보 모두 제거
+bool SessionManager::RemoveUser(uint32_t uid)
+{
+    std::lock_guard<std::mutex> lock(sessionMutex);
+
+    auto it = uidToUser.find(uid);
+    if (it != uidToUser.end()) {
+        const std::string& nickname = it->second.nickname;
+        SOCKET sock = it->second.socket;
+
+        nicknameToUid.erase(nickname);
+        uidToUser.erase(it);
+        socketToUid.erase(sock); // socketToUid도 정리해줘야 함
+
+        return true;
+    }
+    return false; // uid가 존재하지 않음
 }
 
 // 소켓으로 UID를 조회하고 해당 유저 정보 반환

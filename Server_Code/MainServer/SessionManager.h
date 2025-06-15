@@ -33,6 +33,7 @@ public:
 
     void AddUser(SOCKET socket, const UserSession& session);
     void RemoveUser(SOCKET socket);
+    bool RemoveUser(uint32_t uid);
 
     UserSession* GetUserBySocket(SOCKET socket);
     UserSession* GetUserByUID(uint32_t uid);

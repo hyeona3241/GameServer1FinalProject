@@ -19,7 +19,7 @@ public:
     int32_t ReadInt32();
     float ReadFloat();
     std::string ReadString(); // null-terminated ¹®ÀÚ¿­
-    PacketHeader ReadHeader();
+    struct PacketHeader ReadHeader();
 
     bool EndOfBuffer() const { return offset >= size; }
 

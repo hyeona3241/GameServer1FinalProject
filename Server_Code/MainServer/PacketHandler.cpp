@@ -29,7 +29,7 @@ void PacketHandler::HandlePacket(SOCKET clientSocket, const PacketHeader& header
         break;
     default:
     {
-        ErrorPacket error(EErrorCode::UNKNOWN_ERROR, "지원하지 않는 패킷입니다.");
+        ErrorPacket error(EErrorCode::INVALID_PACKET, "지원하지 않는 패킷입니다.");
         NetworkManager::GetInstance().SendPacket(clientSocket, error.Serialize());
     }
     break;
@@ -124,13 +124,42 @@ void PacketHandler::HandleLoginFinalize(SOCKET clientSocket, BinaryReader& reade
     catch (const std::exception& e) {
         std::cerr << "[HandleLoginFinalize] Exception: " << e.what() << std::endl;
     
-        ErrorPacket error(EErrorCode::UNKNOWN_ERROR, "로그인 최종 단계에서 오류가 발생했습니다.");
+        ErrorPacket error(EErrorCode::LOGIN_FAILED, "로그인 최종 단계에서 오류가 발생했습니다.");
         NetworkManager::GetInstance().SendPacket(clientSocket, error.Serialize());
     }
 }
 
 
 
-void PacketHandler::HandleLogoutReq(SOCKET, BinaryReader&)
+void PacketHandler::HandleLogoutReq(SOCKET clientSocket, BinaryReader& reader)
 {
+    try {
+        LogoutReqPacket req;
+        req.Deserialize(reader.GetBuffer(), reader.GetBufferSize());
+
+        uint32_t uid = req.GetUID();
+
+        // 세션 제거 시도
+        bool success = SessionManager::GetInstance().RemoveUser(uid);
+
+        if (success) {
+            std::cout << "[HandleLogoutReq] 유저 로그아웃 성공 - UID: " << uid << std::endl;
+
+            // 필요 시: 다른 유저에게 브로드캐스트 알림 처리도 가능
+        }
+        else {
+            std::cerr << "[HandleLogoutReq] 유저 정보 삭제 실패 - UID: " << uid << std::endl;
+
+            // 클라에 에러 패킷 보내는 것도 고려 가능
+            ErrorPacket error(EErrorCode::INVALID_UID, "로그아웃 처리 중 UID 정보가 유효하지 않습니다.");
+            NetworkManager::GetInstance().SendPacket(clientSocket, error.Serialize());
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "[HandleLogoutReq] 예외 발생: " << e.what() << std::endl;
+
+        ErrorPacket error(EErrorCode::UNKNOWN_ERROR, "로그아웃 패킷 처리 중 예외가 발생했습니다.");
+        NetworkManager::GetInstance().SendPacket(clientSocket, error.Serialize());
+    }
 }
+

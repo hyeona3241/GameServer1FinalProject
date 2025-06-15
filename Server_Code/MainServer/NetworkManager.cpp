@@ -81,7 +81,8 @@ void NetworkManager::ClientWorker(SOCKET clientSocket)
         int recvLen = recv(clientSocket, buffer, BUFFER_SIZE, 0);
         if (recvLen <= 0)
         {
-            std::cout << "[Client] Disconnected.\n";
+            std::cout << "[Client] Disconnected: Socket = " << clientSocket << std::endl;
+
             SessionManager::GetInstance().RemoveUser(clientSocket);
             closesocket(clientSocket);
             break;
