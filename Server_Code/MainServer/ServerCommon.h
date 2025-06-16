@@ -50,6 +50,13 @@ constexpr size_t MAX_BUFFER_SIZE = 1024;
 constexpr size_t MAX_NICKNAME_LENGTH = 16;
 
 
+// ==============================
+// 채팅 서버 설정 상수
+// ==============================
+constexpr const char* CHAT_SERVER_IP = "127.0.0.1";
+constexpr uint16_t CHAT_SERVER_PORT = 8001;
+
+
 
 // ==============================
 // 유저 세션 구조체
@@ -60,7 +67,7 @@ struct UserSession {
     uint16_t port;          // 클라이언트 포트 번호
     SOCKET socket;          // 소켓 번호
     std::string nickname;   // 클라이언트 닉네임
-    uint32_t uid;           // 고유 UID
+    uint32_t uid = 0;       // 고유 UID
     uint8_t modelId = 0;    // 선택한 모델 ID
     bool isLoggedIn = false;// 로그인 완료 여부
 
@@ -76,6 +83,24 @@ struct UserSession {
     }
 };
 
+
+
+// ==============================
+// 채팅 유저 세션 구조체
+// - 채팅 서버 접속 클라이언트의 상태 저장
+// ==============================
+struct ChatUserInfo
+{
+    uint32_t uid;
+    std::string nickname;
+    SOCKET socket;
+
+    ChatUserInfo() = default;
+
+    ChatUserInfo(uint32_t uid_, const std::string& nickname_, SOCKET socket_)
+        : uid(uid_), nickname(nickname_), socket(socket_) {
+    }
+};
 
 
 // ==============================

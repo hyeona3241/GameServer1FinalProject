@@ -1,4 +1,7 @@
 #pragma once
+#include <stdexcept>
+#include <iostream>
+
 #include "Packet.h"
 
 class ChatPacket : public Packet

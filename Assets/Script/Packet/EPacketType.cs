@@ -15,7 +15,6 @@ namespace NetworkUtil
         CHAT_SEND_REQ = 2003,
         CHAT_BROADCAST = 2004,
         CHAT_CHANNEL_LEAVE_REQ = 2005,
-        CHAT_ERROR = 2099,
 
         ERROR_MSG = 9001
     }

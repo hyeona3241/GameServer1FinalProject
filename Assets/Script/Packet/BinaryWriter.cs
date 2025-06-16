@@ -20,6 +20,11 @@ namespace NetworkUtil
             buffer.AddRange(BitConverter.GetBytes(value));
         }
 
+        public void WriteUInt64(ulong value)
+        {
+            buffer.AddRange(BitConverter.GetBytes(value));
+        }
+
         public void WriteInt32(int value)
         {
             buffer.AddRange(BitConverter.GetBytes(value));

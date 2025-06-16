@@ -16,7 +16,8 @@ public class UnityNetworkClient : MonoBehaviour
     public string serverIP = "127.0.0.1";
     public int serverPort = 7777;
 
-    public LoginUIController loginUIController;
+    private LoginUIController loginUIController;
+    private ChatUIController chatUIController;
 
     //메인 스레드에서 실행할 작업 큐
     private readonly Queue<Action> mainThreadActions = new Queue<Action>();
@@ -25,6 +26,33 @@ public class UnityNetworkClient : MonoBehaviour
     void Start()
     {
         ConnectToServer();
+    }
+
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+
+    void Update()
+    {
+        lock (actionLock)
+        {
+            while (mainThreadActions.Count > 0)
+            {
+                var action = mainThreadActions.Dequeue();
+                action?.Invoke();
+            }
+        }
+
+        if (loginUIController == null && UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "LoginScene")
+        {
+            loginUIController = FindObjectOfType<LoginUIController>();
+        }
+
+        if (loginUIController == null && UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "MainScene")
+        {
+            chatUIController = FindObjectOfType<ChatUIController>();
+        }
     }
 
     void ConnectToServer()
@@ -196,6 +224,27 @@ public class UnityNetworkClient : MonoBehaviour
                         break;
                     }
 
+                case EPacketType.CHAT_BROADCAST:
+                    {
+                        var broadcast = new ChatBroadcastPacket();
+                        broadcast.Deserialize(reader);
+
+                        EnqueueMainThreadAction(() =>
+                        {
+                            Debug.Log($"[Chat] {broadcast.UID}: {broadcast.Message}");
+
+                            var chatUI = FindObjectOfType<ChatUIController>();
+                            if (chatUI != null)
+                            {
+                                chatUI.AppendMessage(broadcast.UID, broadcast.Message);
+                            }
+                            else
+                            {
+                                Debug.LogWarning("[Chat] ChatUIController를 찾을 수 없습니다.");
+                            }
+                        });
+                        break;
+                    }
 
                 default:
                     Debug.Log($"Unknown packet type: {type}");
@@ -217,18 +266,7 @@ public class UnityNetworkClient : MonoBehaviour
         }
     }
 
-    //Unity 메인 스레드에서 실행
-    void Update()
-    {
-        lock (actionLock)
-        {
-            while (mainThreadActions.Count > 0)
-            {
-                var action = mainThreadActions.Dequeue();
-                action?.Invoke();
-            }
-        }
-    }
+    
 
     private void OnApplicationQuit()
     {

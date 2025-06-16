@@ -79,7 +79,13 @@
       <Filter>헤더 파일\ChatPacket</Filter>
     </ClInclude>
     <ClInclude Include="ChatChannelLeaveReqPacket.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>헤더 파일\ChatPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatSendReqPacket.h">
+      <Filter>헤더 파일\ChatPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatBroadcastPacket.h">
+      <Filter>헤더 파일\ChatPacket</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -132,7 +138,13 @@
       <Filter>소스 파일\ChatPacket</Filter>
     </ClCompile>
     <ClCompile Include="ChatChannelLeaveReqPacket.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>소스 파일\ChatPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatSendReqPacket.cpp">
+      <Filter>소스 파일\ChatPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatBroadcastPacket.cpp">
+      <Filter>소스 파일\ChatPacket</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

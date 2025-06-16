@@ -30,8 +30,7 @@ enum class EPacketType : uint16_t {
 
     CHAT_CHANNEL_LEAVE_REQ = 2005, // 채널 퇴장 요청 (클 -> 메)
 
-    CHAT_ERROR = 2099,  // 채팅 전용 오류 응답 (예: 채널 없음, 권한 없음 등)
-
+   
 
     // 시스템 : 9000~9999
     ERROR_MSG = 9001
@@ -73,6 +72,10 @@ enum class EErrorCode : uint16_t {
 
     // 잘못된 패킷 정보
     INVALID_PACKET = 90,
+
+    // 채팅 에러 (200~
+    CHAT_ERROR = 201,
+
 
     UNKNOWN_ERROR = 999
 };

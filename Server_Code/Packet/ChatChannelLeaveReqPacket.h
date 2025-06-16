@@ -1,5 +1,6 @@
 #pragma once
 #include "ChatPacket.h"
+
 class ChatChannelLeaveReqPacket : public ChatPacket
 {
 public:

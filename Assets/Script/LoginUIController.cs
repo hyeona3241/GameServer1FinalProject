@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.IO;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System;
 
 public class LoginUIController : MonoBehaviour
 {
@@ -132,6 +133,10 @@ public class LoginUIController : MonoBehaviour
         SceneManager.LoadScene("MainScene");
 
         //채팅 서버 입장 패킷 보내기
+        uint uid = UserInfoManager.Instance.UID;
+        ulong timestamp = (ulong)DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var packet = new ChatChannelEnterReqPacket(uid, timestamp);
+        networkClient.SendPacket(packet);
 
     }
 }

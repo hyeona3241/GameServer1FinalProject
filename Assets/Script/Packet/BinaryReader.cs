@@ -41,6 +41,16 @@ namespace NetworkUtil
             return value;
         }
 
+        public ulong ReadUInt64()
+        {
+            if (offset + 8 > buffer.Length)
+                throw new IndexOutOfRangeException("ReadUInt64 buffer overrun");
+
+            ulong value = BitConverter.ToUInt64(buffer, offset);
+            offset += 8;
+            return value;
+        }
+
         public int ReadInt32()
         {
             if (offset + 4 > buffer.Length)

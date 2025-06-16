@@ -1,6 +1,5 @@
 // ChatChannelEnterReqPacket.cpp
 #include "ChatChannelEnterReqPacket.h"
-#include <iostream>
 
 ChatChannelEnterReqPacket::ChatChannelEnterReqPacket()
     : ChatChannelEnterReqPacket(0, 0) {
