@@ -40,6 +40,7 @@ public:
     bool IsNicknameDuplicate(const std::string& nickname);
     uint32_t RegisterNewUser(UserSession& session);
     bool SetModelId(uint32_t uid, uint8_t modelId);
+    size_t GetUserCount();
 
     void PrintAllUsers(); // µð¹ö±ë¿ë
 

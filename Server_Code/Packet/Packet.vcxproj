@@ -129,6 +129,10 @@
   <ItemGroup>
     <ClInclude Include="BinaryReader.h" />
     <ClInclude Include="BinaryWriter.h" />
+    <ClInclude Include="ChatChannelEnterAckPacket.h" />
+    <ClInclude Include="ChatChannelEnterReqPacket.h" />
+    <ClInclude Include="ChatChannelLeaveReqPacket.h" />
+    <ClInclude Include="ChatPacket.h" />
     <ClInclude Include="ErrorPacket.h" />
     <ClInclude Include="LoginFinalizeReqPacket.h" />
     <ClInclude Include="LoginModelSelectAckPacket.h" />
@@ -145,6 +149,10 @@
   <ItemGroup>
     <ClCompile Include="BinaryReader.cpp" />
     <ClCompile Include="BinaryWriter.cpp" />
+    <ClCompile Include="ChatChannelEnterAckPacket.cpp" />
+    <ClCompile Include="ChatChannelEnterReqPacket.cpp" />
+    <ClCompile Include="ChatChannelLeaveReqPacket.cpp" />
+    <ClCompile Include="ChatPacket.cpp" />
     <ClCompile Include="ErrorPacket.cpp" />
     <ClCompile Include="LoginFinalizeReqPacket.cpp" />
     <ClCompile Include="LoginModelSelectAckPacket.cpp" />

@@ -19,6 +19,12 @@
     <Filter Include="소스 파일\LogIOPacket">
       <UniqueIdentifier>{8d538674-722b-4bef-9172-98e57bf85dbe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="헤더 파일\ChatPacket">
+      <UniqueIdentifier>{d33ba140-1513-44f8-99ee-2ea25caa8ea3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\ChatPacket">
+      <UniqueIdentifier>{12e6f53c-2046-4a03-8c25-c426e88071e0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Packet.h">
@@ -63,6 +69,18 @@
     <ClInclude Include="PacketDef.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="ChatPacket.h">
+      <Filter>헤더 파일\ChatPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatChannelEnterReqPacket.h">
+      <Filter>헤더 파일\ChatPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatChannelEnterAckPacket.h">
+      <Filter>헤더 파일\ChatPacket</Filter>
+    </ClInclude>
+    <ClInclude Include="ChatChannelLeaveReqPacket.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Packet.cpp">
@@ -103,6 +121,18 @@
     </ClCompile>
     <ClCompile Include="LogoutReqPacket.cpp">
       <Filter>소스 파일\LogIOPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatPacket.cpp">
+      <Filter>소스 파일\ChatPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatChannelEnterReqPacket.cpp">
+      <Filter>소스 파일\ChatPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatChannelEnterAckPacket.cpp">
+      <Filter>소스 파일\ChatPacket</Filter>
+    </ClCompile>
+    <ClCompile Include="ChatChannelLeaveReqPacket.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

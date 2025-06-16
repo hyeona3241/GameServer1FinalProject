@@ -18,6 +18,13 @@ void BinaryWriter::WriteUInt32(uint32_t value)
     buffer.insert(buffer.end(), bytes, bytes + sizeof(uint32_t));
 }
 
+void BinaryWriter::WriteUInt64(uint64_t value)
+{
+    char bytes[8];
+    std::memcpy(bytes, &value, sizeof(uint64_t));
+    buffer.insert(buffer.end(), bytes, bytes + sizeof(uint64_t));
+}
+
 void BinaryWriter::WriteInt32(int32_t value) {
     char bytes[4];
     std::memcpy(bytes, &value, sizeof(int32_t));

@@ -16,6 +16,7 @@ public:
     uint8_t ReadUInt8();
     uint16_t ReadUInt16();
     uint32_t ReadUInt32();
+    uint64_t ReadUInt64();
     int32_t ReadInt32();
     float ReadFloat();
     std::string ReadString(); // null-terminated ¹®ÀÚ¿­

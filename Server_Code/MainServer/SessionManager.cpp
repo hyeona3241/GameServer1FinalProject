@@ -106,6 +106,12 @@ bool SessionManager::SetModelId(uint32_t uid, uint8_t modelId)
     return true;
 }
 
+size_t SessionManager::GetUserCount()
+{
+    std::lock_guard<std::mutex> lock(sessionMutex);
+    return uidToUser.size();
+}
+
 
 // 모든 유저 정보를 출력 (디버깅용)
 void SessionManager::PrintAllUsers()

@@ -1,2 +1,2 @@
-﻿  LoginSuccessAckPacket.cpp
-  Packet.vcxproj -> C:\Users\pha21\Documents\GitHub\GameServer1FinalProject\Server_Code\x64\Debug\Packet.lib
+﻿  ChatPacket.cpp
+  Packet.vcxproj -> C:\Users\hongik\Documents\GitHub\GameServer1FinalProject\Server_Code\x64\Debug\Packet.lib

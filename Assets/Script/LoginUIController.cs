@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class LoginUIController : MonoBehaviour
 {
@@ -121,11 +122,16 @@ public class LoginUIController : MonoBehaviour
                                ack.UID
         );
 
+        Debug.Log("[Client] 로그인 성공. 메인 씬으로 이동합니다.");
+
         LoginCanvas.SetActive(false);
         LoginSuccessCanvas.SetActive(false);
 
         LobbyCanvas.SetActive(true);
 
-        //lobbyUIController?.UpdateUserInfoUI();
+        SceneManager.LoadScene("MainScene");
+
+        //채팅 서버 입장 패킷 보내기
+
     }
 }

@@ -10,8 +10,12 @@ namespace NetworkUtil
         LOGIN_SUCCESS_ACK = 1006,
         LOGOUT_REQ = 1007,
 
-        CHAT_SEND = 2001,
-        CHAT_RECV = 2002,
+        CHAT_CHANNEL_ENTER_REQ = 2001,
+        CHAT_CHANNEL_ENTER_ACK = 2002,
+        CHAT_SEND_REQ = 2003,
+        CHAT_BROADCAST = 2004,
+        CHAT_CHANNEL_LEAVE_REQ = 2005,
+        CHAT_ERROR = 2099,
 
         ERROR_MSG = 9001
     }

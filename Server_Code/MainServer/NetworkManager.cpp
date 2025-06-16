@@ -63,6 +63,17 @@ void NetworkManager::AcceptLoop()
             continue;
         }
 
+        if (SessionManager::GetInstance().GetUserCount() >= MAX_CLIENTS) {
+            std::cerr << "[Server] Number of Access Exceeded. Client Rejected.\n";
+
+            ErrorPacket error(EErrorCode::SERVER_FULL, "Not connect server. Maximum users.");
+            auto data = error.Serialize();
+            SendPacket(clientSocket, data);
+
+            closesocket(clientSocket); // 연결 즉시 종료
+            continue;
+        }
+
         std::cout << "[Server] Client connected.\n";
 
         std::lock_guard<std::mutex> lock(threadMutex);

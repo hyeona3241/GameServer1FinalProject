@@ -15,4 +15,13 @@ public class LobbyUIController : MonoBehaviour
         UIDText.text = $"UID: {client.UID}";
         ModelIdText.text = $"ModelID: {client.ModelID}";
     }
+
+    void Start()
+    {
+        var client = UserInfoManager.Instance;
+
+        NicknameText.text = $"Nickname: {client.Nickname}";
+        UIDText.text = $"UID: {client.UID}";
+        ModelIdText.text = $"ModelID: {client.ModelID}";
+    }
 }

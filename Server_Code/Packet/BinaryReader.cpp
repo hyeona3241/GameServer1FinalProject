@@ -40,6 +40,17 @@ uint32_t BinaryReader::ReadUInt32()
     return value;
 }
 
+uint64_t BinaryReader::ReadUInt64()
+{
+    if (offset + sizeof(uint64_t) > size)
+        throw std::out_of_range("BinaryReader: Buffer overrun on ReadUInt64");
+
+    uint64_t value;
+    std::memcpy(&value, buffer + offset, sizeof(uint64_t));
+    offset += sizeof(uint64_t);
+    return value;
+}
+
 int32_t BinaryReader::ReadInt32()
 {
     if (offset + sizeof(int32_t) > size)
