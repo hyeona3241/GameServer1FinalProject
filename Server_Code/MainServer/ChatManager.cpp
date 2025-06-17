@@ -107,28 +107,24 @@ void ChatManager::ReceiveLoop()
             break;
         }
 
-        // 최소한 4바이트(길이) + Header는 있어야 정상 패킷으로 처리 가능
         if (received < sizeof(uint32_t) + sizeof(PacketHeader)) {
             std::cerr << "[ChatManager] 수신 데이터가 너무 작음 (" << received << " bytes)" << std::endl;
             continue;
         }
 
-        // 1. 길이 파싱
         uint32_t packetSize = 0;
         memcpy(&packetSize, buffer, sizeof(uint32_t));
 
-        // 2. 수신된 데이터가 길이보다 작으면 무시
+        // 수신된 데이터가 길이보다 작으면 무시
         if (received < static_cast<int>(packetSize + sizeof(uint32_t))) {
             std::cerr << "[ChatManager] 수신된 패킷 크기 부족: 기대=" << (packetSize + 4)
                 << ", 실제=" << received << std::endl;
             continue;
         }
 
-        // 3. BinaryReader 생성 (payload 시작 위치는 buffer + 4)
         BinaryReader reader(buffer + sizeof(uint32_t), packetSize);
         PacketHeader header = reader.ReadHeader();
 
-        // 4. 핸들러 호출
         PacketHandler::HandleChatPacket(chatSocket, header, reader);
     }
 
@@ -150,7 +146,7 @@ void ChatManager::RemoveChatUser(uint32_t uid)
     std::lock_guard<std::mutex> lock(userMutex);
     auto it = chatUserMap.find(uid);
     if (it != chatUserMap.end()) {
-        chatNicknameMap.erase(it->second.nickname);  // 닉네임 기반도 제거
+        chatNicknameMap.erase(it->second.nickname);
         chatUserMap.erase(it);
         std::cout << "[ChatManager] 채팅 유저 제거: UID=" << uid << std::endl;
     }

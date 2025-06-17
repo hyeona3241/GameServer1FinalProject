@@ -4,6 +4,9 @@
 
 #include "Packet.h"
 
+
+// 채팅 전용 공통 패킷 기반 클래스
+// UID 및 타임스탬프를 포함하고, 직렬화/역직렬화 기본 기능을 제공합니다.
 class ChatPacket : public Packet
 {
 protected:

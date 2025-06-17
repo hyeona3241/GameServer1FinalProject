@@ -4,7 +4,7 @@
 #include "Packet.h"
 #include "ErrorPacket.h"
 
-// ΩÃ±€≈Ê ¿ŒΩ∫≈œΩ∫ π›»Ø
+// ΩÃ±€≈Ê
 NetworkManager& NetworkManager::GetInstance()
 {
     static NetworkManager instance;

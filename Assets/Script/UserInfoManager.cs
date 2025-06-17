@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// 현재 로그인한 사용자 정보를 전역적으로 관리하는 싱글톤 클래스입니다.
+// UID, 닉네임, 모델 ID를 저장하며, 씬 전환에도 유지됩니다.
+
 public class UserInfoManager : MonoBehaviour
 {
     private static UserInfoManager instance;

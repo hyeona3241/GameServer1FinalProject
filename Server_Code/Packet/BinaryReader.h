@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include "Packet.h"
 
+// 수신된 바이너리 데이터를 읽기 위한 클래스입니다.
+// 패킷 데이터를 각 타입별로 추출할 수 있도록 지원합니다.
 class BinaryReader {
 private:
     const char* buffer;

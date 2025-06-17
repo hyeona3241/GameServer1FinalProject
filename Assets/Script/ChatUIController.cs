@@ -5,6 +5,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+// 메인 씬에서 채팅 UI를 제어하는 클래스입니다.
+// 사용자가 채팅 입력 시 서버에 메시지를 보내고, 수신된 메시지를 화면에 출력합니다.
+// 입력된 명령어(`/logout`)에 따라 로그아웃 처리도 수행합니다.
 
 public class ChatUIController : MonoBehaviour
 {

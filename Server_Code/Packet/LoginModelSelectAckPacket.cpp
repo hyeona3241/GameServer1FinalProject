@@ -25,7 +25,7 @@ std::vector<char> LoginModelSelectAckPacket::Serialize() const {
     PacketHeader h = header;
     h.size = sizeof(PacketHeader) + sizeof(uint8_t) + sizeof(uint8_t);
 
-    writer.WriteHeader(h); // 수정된 사이즈 포함하여 헤더 기록
+    writer.WriteHeader(h);
     writer.WriteUInt8(static_cast<uint8_t>(isValidModel));
     writer.WriteUInt8(modelId);
 

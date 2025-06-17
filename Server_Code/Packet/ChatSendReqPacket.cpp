@@ -7,7 +7,7 @@ ChatSendReqPacket::ChatSendReqPacket()
 ChatSendReqPacket::ChatSendReqPacket(uint32_t uid, uint64_t timestamp, const std::string& msg)
     : ChatPacket(EPacketType::CHAT_SEND_REQ, uid, timestamp), message(msg)
 {
-    header.size = sizeof(PacketHeader); // 이후 Serialize에서 갱신됨
+    header.size = sizeof(PacketHeader);
 }
 
 std::vector<char> ChatSendReqPacket::Serialize() const
@@ -19,9 +19,9 @@ std::vector<char> ChatSendReqPacket::Serialize() const
     writer.WriteString(message);
 
     std::vector<char> buffer = writer.GetBuffer();
-    // WriteHeader의 사이즈가 Serialize 전에 고정이므로 여기서 정확히 갱신
+
     uint16_t totalSize = static_cast<uint16_t>(buffer.size());
-    *reinterpret_cast<uint16_t*>(&buffer[2]) = totalSize; // size 필드 위치는 offset 2
+    *reinterpret_cast<uint16_t*>(&buffer[2]) = totalSize;
 
     return buffer;
 }

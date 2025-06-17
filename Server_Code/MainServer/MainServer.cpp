@@ -1,4 +1,3 @@
-// main.cpp
 #include "NetworkManager.h"
 
 int main()

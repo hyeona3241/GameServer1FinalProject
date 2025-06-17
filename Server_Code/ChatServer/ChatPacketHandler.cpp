@@ -33,6 +33,8 @@ void ChatPacketHandler::HandlePacket(SOCKET socket, const PacketHeader& header, 
     }
 }
 
+// - HandleChatEnterReq:
+//   클라이언트가 채팅 채널에 입장할 때 호출되며, UID 및 타임스탬프 기반 ACK 패킷을 메인 서버로 전송.
 void ChatPacketHandler::HandleChatEnterReq(SOCKET socket, BinaryReader& reader)
 {
     ChatChannelEnterReqPacket req;
@@ -54,10 +56,11 @@ void ChatPacketHandler::HandleChatEnterReq(SOCKET socket, BinaryReader& reader)
     }
 }
 
+// - HandleChatSendReq:
+//   클라이언트로부터 수신된 메시지를 콘솔에 출력하고, 이를 메인 서버에 CHAT_BROADCAST 형태로 전송.
 void ChatPacketHandler::HandleChatSendReq(SOCKET, BinaryReader& reader)
 {
     try {
-        // 1. CHAT_SEND_REQ 역직렬화
         ChatSendReqPacket req;
         req.Deserialize(reader.GetBuffer(), reader.GetBufferSize());
 
@@ -65,14 +68,11 @@ void ChatPacketHandler::HandleChatSendReq(SOCKET, BinaryReader& reader)
         uint64_t timestamp = req.GetTimestamp();
         const std::string& message = req.GetMessage();
 
-        // 2. 메시지 로그 출력
         std::cout << "[ChatSendReq] UID: " << uid << " | Message: " << message << std::endl;
 
-        // 3. CHAT_BROADCAST 패킷 생성
         ChatBroadcastPacket broadcast(uid, timestamp, message);
         std::vector<char> data = broadcast.Serialize();
 
-        // 4. 메인 서버로 전송
         if (!ChatServer::GetInstance().SendPacket(data)) {
             std::cerr << "[ChatSendReq] 메인 서버로 메시지 전송 실패!" << std::endl;
         }
@@ -85,20 +85,18 @@ void ChatPacketHandler::HandleChatSendReq(SOCKET, BinaryReader& reader)
     }
 }
 
+// - HandleChatLeaveReq:
+//   클라이언트 퇴장 시 UID를 기준으로 LOGOUT_REQ 패킷을 생성하여 메인 서버에 전송.
 void ChatPacketHandler::HandleChatLeaveReq(SOCKET, BinaryReader& reader)
 {
     try {
-        // 1. UID 추출
         uint32_t uid = reader.ReadUInt32();
 
-        // 2. 로그 출력
         std::cout << "[ChatLeaveReq] UID " << uid << " 유저가 퇴장하였습니다." << std::endl;
 
-        // 3. LOGOUT_REQ 패킷 생성
         LogoutReqPacket logoutPacket(uid);
         std::vector<char> data = logoutPacket.Serialize();
 
-        // 4. 메인 서버로 전송
         if (!ChatServer::GetInstance().SendPacket(data)) {
             std::cerr << "[ChatLeaveReq] 메인 서버로 LOGOUT_REQ 전송 실패 - UID: " << uid << std::endl;
         }

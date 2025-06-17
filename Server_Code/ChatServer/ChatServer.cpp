@@ -102,20 +102,17 @@ bool ChatServer::SendPacket(const std::vector<char>& data)
     int totalSent = 0;
     int dataSize = static_cast<int>(data.size());
 
-    // 총 패킷 크기를 앞에 추가
     uint32_t totalSize = static_cast<uint32_t>(data.size());
     std::vector<char> fullPacket(sizeof(uint32_t) + dataSize);
     memcpy(fullPacket.data(), &totalSize, sizeof(uint32_t));
     memcpy(fullPacket.data() + sizeof(uint32_t), data.data(), dataSize);
 
-    // 패킷 타입 추출
     EPacketType packetType = EPacketType::None;
     if (data.size() >= sizeof(PacketHeader)) {
         const PacketHeader* header = reinterpret_cast<const PacketHeader*>(data.data());
         packetType = static_cast<EPacketType>(header->type);
     }
 
-    // send loop
     int fullSize = static_cast<int>(fullPacket.size());
     while (totalSent < fullSize)
     {

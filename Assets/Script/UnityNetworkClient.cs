@@ -6,6 +6,11 @@ using System.IO;
 using System.Collections.Generic;
 using NetworkUtil;
 
+
+// 서버와의 TCP 연결 및 패킷 송수신을 관리하는 핵심 네트워크 클래스입니다.
+// 로그인, 채팅, 모델 선택 등 모든 클라이언트 패킷을 처리하며, 수신된 패킷은 UI 컨트롤러로 전달됩니다.
+// 메인 스레드 작업 큐를 사용하여 Unity UI 스레드에서 안전하게 처리합니다.
+
 public class UnityNetworkClient : MonoBehaviour
 {
     private TcpClient tcpClient;

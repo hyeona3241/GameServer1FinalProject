@@ -8,7 +8,7 @@ ChatBroadcastPacket::ChatBroadcastPacket()
 ChatBroadcastPacket::ChatBroadcastPacket(uint32_t uid, uint64_t timestamp, const std::string& msg)
     : ChatPacket(EPacketType::CHAT_BROADCAST, uid, timestamp), message(msg)
 {
-    header.size = sizeof(PacketHeader); // Serialize ½Ã °è»êµÊ
+    header.size = sizeof(PacketHeader);
 }
 
 std::vector<char> ChatBroadcastPacket::Serialize() const
@@ -20,7 +20,7 @@ std::vector<char> ChatBroadcastPacket::Serialize() const
     writer.WriteString(message);
 
     std::vector<char> buffer = writer.GetBuffer();
-    *reinterpret_cast<uint16_t*>(&buffer[2]) = static_cast<uint16_t>(buffer.size()); // header.size
+    *reinterpret_cast<uint16_t*>(&buffer[2]) = static_cast<uint16_t>(buffer.size());
     return buffer;
 }
 

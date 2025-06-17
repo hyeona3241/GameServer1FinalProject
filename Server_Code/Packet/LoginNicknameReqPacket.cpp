@@ -25,7 +25,6 @@ void LoginNicknameReqPacket::Deserialize(const char* buffer, size_t bufferSize)
 {
     BinaryReader reader(buffer, bufferSize);
 
-    //header = reader.ReadHeader();
     nickname = reader.ReadString();
 
  

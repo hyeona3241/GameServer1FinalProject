@@ -5,6 +5,9 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using System;
 
+// 로그인 씬에서 UI 입력(닉네임 등)을 받고 UnityNetworkClient를 통해 서버에 로그인 요청을 보냅니다.
+// 서버 응답(중복 여부 등)을 받아 UI를 갱신하거나 다음 단계로 넘어갑니다.
+
 public class LoginUIController : MonoBehaviour
 {
     public Button LoginButton;

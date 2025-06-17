@@ -1,6 +1,8 @@
 #pragma once
 #include "ChatPacket.h"
 
+// 채팅 채널 퇴장 요청 패킷
+// 클라이언트 → 서버로 채팅 퇴장을 알릴 때 사용합니다.
 class ChatChannelLeaveReqPacket : public ChatPacket
 {
 public:

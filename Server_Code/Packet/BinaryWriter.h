@@ -5,13 +5,15 @@
 #include <cstdint>
 #include "Packet.h"
 
+// 네트워크 전송을 위한 바이너리 패킷을 구성하는 클래스입니다.
+// 다양한 타입을 순차적으로 버퍼에 기록할 수 있습니다.
 class BinaryWriter {
 private:
     std::vector<char> buffer;
 
 public:
     BinaryWriter() {
-        buffer.reserve(1024); // 초기 용량 확보 (성능 최적화)
+        buffer.reserve(1024);
     }
 
     void WriteUInt8(uint8_t value);

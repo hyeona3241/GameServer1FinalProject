@@ -16,6 +16,7 @@
 #include "ChatSendReqPacket.h"
 #include "ChatChannelLeaveReqPacket.h"
 
+// 클라이언트로 부터 받는 패킷
 void PacketHandler::HandlePacket(SOCKET clientSocket, const PacketHeader& header, BinaryReader& reader)
 {
     switch (header.type)
@@ -51,6 +52,8 @@ void PacketHandler::HandlePacket(SOCKET clientSocket, const PacketHeader& header
     }
 }
 
+
+// 채팅 서버로부터 받는 패킷
 void PacketHandler::HandleChatPacket(SOCKET chatSocket, const PacketHeader& header, BinaryReader& reader)
 {
     switch (header.type)
@@ -72,6 +75,10 @@ void PacketHandler::HandleChatPacket(SOCKET chatSocket, const PacketHeader& head
 }
 
 
+
+// [HandleLoginNicknameReq]
+// 클라이언트가 보낸 닉네임을 검증하고 중복 여부를 확인합니다.
+// 중복이 아니면 UID를 발급하고 세션에 등록한 후, ACK 패킷을 전송합니다.
 void PacketHandler::HandleLoginNicknameReq(SOCKET clientSocket, BinaryReader& reader)
 {
     try {
@@ -112,11 +119,10 @@ void PacketHandler::HandleLoginNicknameReq(SOCKET clientSocket, BinaryReader& re
 }
 
 
-
-
-
-
-
+// [HandleModelSelect]
+// 클라이언트가 선택한 캐릭터 모델 ID를 수신하여 해당 세션에 반영합니다.
+// 유효한 모델 ID인 경우 세션에 저장 후 성공 응답을 전송하며,
+// 유효하지 않거나 세션이 없을 경우 실패 응답을 전송합니다.
 void PacketHandler::HandleModelSelect(SOCKET clientSocket, BinaryReader& reader)
 {
     try {
@@ -140,7 +146,7 @@ void PacketHandler::HandleModelSelect(SOCKET clientSocket, BinaryReader& reader)
         LoginModelSelectAckPacket ack(isValid, modelId);
         std::vector<char> buffer = ack.Serialize();
 
-        // 전송할 바이트 로그 출력
+        // 전송할 바이트 로그 출력 (디버그용)
         std::cout << "[ModelSelectAck] Sending Packet (size = " << buffer.size() << "): ";
         for (unsigned char c : buffer)
             printf("%02X-", c);
@@ -150,42 +156,40 @@ void PacketHandler::HandleModelSelect(SOCKET clientSocket, BinaryReader& reader)
     }
     catch (const std::exception& e) {
         std::cerr << "[HandleModelSelect] Exception: " << e.what() << std::endl;
-        //에러 패킷 추가
+        //에러 패킷 추가 가능
     }
 }
 
 
-
+// [HandleLoginFinalizeReq]
+// 클라이언트가 최종적으로 선택한 모델 ID를 수신하여 세션에 저장합니다.
+// 유효성 검사 후 완료 패킷 또는 오류 패킷을 응답합니다.
 void PacketHandler::HandleLoginFinalize(SOCKET clientSocket, BinaryReader& reader)
 {
     try {
         LoginFinalizeReqPacket req;
         req.Deserialize(reader.GetBuffer(), reader.GetBufferSize());
 
-        // 1. 세션 가져오기
         UserSession* session = SessionManager::GetInstance().GetUserBySocket(clientSocket);
         if (session == nullptr) {
             std::cerr << "[HandleLoginFinalize] 세션을 찾을 수 없습니다." << std::endl;
             return;
         }
 
-        // 2. UID 확인 후 응답
         if (session->uid == 0) {
             std::cerr << "[HandleLoginFinalize] UID가 할당되지 않은 세션입니다." << std::endl;
             return;
         }
 
-        // 채팅 서버 연결 시도 (최초 1회만 연결되도록)
         static bool chatConnected = false;
         if (!chatConnected) {
             chatConnected = ChatManager::GetInstance().ConnectToChatServer(CHAT_SERVER_IP, CHAT_SERVER_PORT);
             if (!chatConnected) {
                 std::cerr << "[HandleLoginFinalize] 채팅 서버 연결 실패." << std::endl;
-                // 필요 시 클라에게 에러 패킷 전송
+                
             }
         }
 
-        // 3. 로그인 성공 응답 전송
         LoginSuccessAckPacket ack(session->uid, session->nickname);
         NetworkManager::GetInstance().SendPacket(clientSocket, ack.Serialize());
 
@@ -200,19 +204,21 @@ void PacketHandler::HandleLoginFinalize(SOCKET clientSocket, BinaryReader& reade
     }
 }
 
+
+// [HandleLogoutReq]
+// UID 기반으로 세션과 채팅 유저 정보를 제거합니다.
+// 퇴장 브로드캐스트 메시지를 모든 접속자에게 전송합니다.
 void PacketHandler::HandleLogoutReq(SOCKET clientSocket, BinaryReader& reader)
 {
     try {
         uint32_t uid = reader.ReadUInt32();
 
-        // 1. 닉네임 먼저 확보
         std::string nickname = ChatManager::GetInstance().GetNicknameByUID(uid);
         if (nickname.empty()) {
             std::cerr << "[HandleLogoutReq] UID로 닉네임을 찾을 수 없습니다. UID: " << uid << std::endl;
             return;
         }
 
-        // 2. 브로드캐스트 먼저 처리
         std::string message = "<" + nickname + "> has left the chat.";
         uint64_t timestamp = static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now().time_since_epoch()).count());
@@ -229,7 +235,6 @@ void PacketHandler::HandleLogoutReq(SOCKET clientSocket, BinaryReader& reader)
 
         std::cout << "[HandleLogoutReq] 퇴장 메시지 브로드캐스트 완료: " << message << std::endl;
 
-        // 3. 정보 제거는 브로드캐스트 후 진행
         ChatManager::GetInstance().RemoveChatUser(uid);
         std::cout << "[HandleLogoutReq] UID " << uid << " 채팅 사용자 정보 제거 완료" << std::endl;
 
@@ -253,15 +258,16 @@ void PacketHandler::HandleLogoutReq(SOCKET clientSocket, BinaryReader& reader)
 }
 
 
+
+// [HandleChatEnterReq]
+// 클라이언트의 채팅 채널 입장 요청을 채팅 서버로 전달합니다.
 void PacketHandler::HandleChatEnterReq(SOCKET clientSocket, BinaryReader& reader)
 {
     try {
-        // 1. 패킷 역직렬화
         ChatChannelEnterReqPacket req;
         req.Deserialize(reader.GetBuffer(), reader.GetBufferSize());
         uint32_t uid = req.GetUID();
 
-        // 2. UID 기반 유저 정보 확인
         UserSession* session = SessionManager::GetInstance().GetUserByUID(uid);
         if (session == nullptr) {
             std::cerr << "[HandleChatEnterReq] UID가 유효하지 않음: " << uid << std::endl;
@@ -271,10 +277,8 @@ void PacketHandler::HandleChatEnterReq(SOCKET clientSocket, BinaryReader& reader
             return;
         }
 
-        // 3. ChatManager에 유저 등록
         ChatManager::GetInstance().AddChatUser(uid, session->nickname, clientSocket);
 
-        // 4. 채팅 서버로 같은 패킷 전달
         ChatChannelEnterReqPacket forwardPacket(uid, req.GetTimestamp());
         ChatManager::GetInstance().SendPacket(forwardPacket);
 
@@ -289,15 +293,14 @@ void PacketHandler::HandleChatEnterReq(SOCKET clientSocket, BinaryReader& reader
 }
 
 
-
+// [HandleChatBroadcast]
+// 채팅 서버에서 받은 CHAT_BROADCAST 메시지를 클라이언트들에게 전송합니다.
 void PacketHandler::HandleChatBrpadcast(SOCKET, BinaryReader& reader)
 {
     try {
-        // 1. 수신된 데이터 전체를 그대로 버퍼로 저장
         const char* rawBuffer = reader.GetBuffer();
         size_t bufferSize = reader.GetBufferSize();
 
-        // 2. UID 기반으로 전체 접속자 목록 순회
         for (const auto& pair : ChatManager::GetInstance().GetAllChatUsers())
         {
             SOCKET clientSocket = pair.second.socket;
@@ -324,30 +327,28 @@ void PacketHandler::HandleChatBrpadcast(SOCKET, BinaryReader& reader)
 }
 
 
+// [HandleChatEnterAck]
+// 채팅 서버에서 받은 입장 ACK 패킷을 처리하고,
+// "[닉네임]님이 입장하였습니다." 메시지를 모든 클라이언트에게 브로드캐스트합니다.
 void PacketHandler::HandleChatEnterAck(SOCKET, BinaryReader& reader)
 {
-    // 1. 패킷 역직렬화
     ChatChannelEnterAckPacket ack;
     ack.Deserialize(reader.GetBuffer(), reader.GetBufferSize());
 
     uint32_t uid = ack.GetUID();
     uint64_t timestamp = ack.GetTimestamp();
 
-    // 2. 닉네임 조회
     std::string nickname = ChatManager::GetInstance().GetNicknameByUID(uid);
     if (nickname.empty()) {
         std::cerr << "[HandleChatEnterAck] UID에 해당하는 닉네임을 찾을 수 없습니다. UID: " << uid << std::endl;
         return;
     }
 
-    // 3. 메시지 생성
     std::string message = "<" + nickname + "> has entered the chat.";
 
-    // 4. 패킷 생성 및 직렬화
     ChatBroadcastPacket packet(uid, timestamp, message);
     std::vector<char> data = packet.Serialize();
 
-    // 5. 전체 소켓 순회하여 브로드캐스트
     const auto& allSockets = ChatManager::GetInstance().GetAllClientSockets();
     for (SOCKET clientSocket : allSockets) {
         if (clientSocket == INVALID_SOCKET) continue;
@@ -361,6 +362,9 @@ void PacketHandler::HandleChatEnterAck(SOCKET, BinaryReader& reader)
     std::cout << "[HandleChatEnterAck] " << nickname << " 입장 브로드캐스트 완료" << std::endl;
 }
 
+
+// [HandleChatSendReq]
+// 클라이언트가 입력한 채팅 메시지를 채팅 서버로 전달합니다
 void PacketHandler::HandleChatSendReq(SOCKET, BinaryReader& reader)
 {
     try {
@@ -370,8 +374,8 @@ void PacketHandler::HandleChatSendReq(SOCKET, BinaryReader& reader)
         std::cout << "[HandleChatSendReq] 메시지 수신 - UID: " << packet.GetUID()
             << ", 메시지: " << packet.GetMessage() << std::endl;
 
-        std::vector<char> data = packet.Serialize(); // 다시 감싸서 직렬화
-        ChatManager::GetInstance().SendPacket(packet); // 또는 SendPacket(packet);
+        std::vector<char> data = packet.Serialize(); 
+        ChatManager::GetInstance().SendPacket(packet);
 
         std::cout << "[HandleChatSendReq] 채팅 서버로 전달 완료\n";
     }
@@ -383,19 +387,19 @@ void PacketHandler::HandleChatSendReq(SOCKET, BinaryReader& reader)
     }
 }
 
+
+// [HandleChatLeaveReq]
+// 클라이언트의 채널 퇴장 요청을 채팅 서버로 전달합니다.
 void PacketHandler::HandleChatLeaveReq(SOCKET, BinaryReader& reader)
 {
     try {
-        // 1. 데이터 파싱
         uint32_t uid = reader.ReadUInt32();
         uint64_t timestamp = reader.ReadUInt64();
 
-        // 2. 패킷 생성
         ChatChannelLeaveReqPacket packet(uid, timestamp);
         auto data = packet.Serialize();
 
-        // 3. 채팅 서버로 전송
-        ChatManager::GetInstance().SendPacket(packet);  // 또는 SendRawPacket(data);
+        ChatManager::GetInstance().SendPacket(packet);
 
         std::cout << "[HandleChatLeaveReq] 채팅 서버로 CHAT_CHANNEL_LEAVE_REQ 전송 - UID: " << uid << std::endl;
     }
@@ -403,5 +407,3 @@ void PacketHandler::HandleChatLeaveReq(SOCKET, BinaryReader& reader)
         std::cerr << "[HandleChatLeaveReq] 예외 발생: " << e.what() << std::endl;
     }
 }
-
-

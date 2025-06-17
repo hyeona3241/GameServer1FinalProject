@@ -1,6 +1,9 @@
 #pragma once
 #include "ChatPacket.h"
 
+
+// 채팅 채널 입장 요청 패킷
+// 클라이언트 → 서버로 채널 접속을 시도할 때 전송합니다.
 class ChatChannelEnterReqPacket : public ChatPacket
 {
 public:

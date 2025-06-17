@@ -1,5 +1,8 @@
 #pragma once
 #include "ChatPacket.h"
+
+// 채팅 메시지 전송 요청 패킷
+// 클라이언트 → 서버로 사용자가 입력한 메시지를 보냅니다.
 class ChatSendReqPacket : public ChatPacket
 {
 private:
