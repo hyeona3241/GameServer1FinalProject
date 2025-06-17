@@ -22,4 +22,9 @@ public abstract class ChatPacket : Packet
     {
         return UID != 0 && Timestamp > 0;
     }
+
+    public static ulong GetCurrentUnixTimestamp()
+    {
+        return (ulong)DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+    }
 }

@@ -13,6 +13,8 @@
 #include "ChatChannelEnterReqPacket.h"
 #include "ChatChannelEnterAckPacket.h"
 #include "ChatBroadcastPacket.h"
+#include "ChatSendReqPacket.h"
+#include "ChatChannelLeaveReqPacket.h"
 
 void PacketHandler::HandlePacket(SOCKET clientSocket, const PacketHeader& header, BinaryReader& reader)
 {
@@ -32,6 +34,12 @@ void PacketHandler::HandlePacket(SOCKET clientSocket, const PacketHeader& header
         break;
     case EPacketType::CHAT_CHANNEL_ENTER_REQ :
         HandleChatEnterReq(clientSocket, reader);
+        break;
+    case EPacketType::CHAT_SEND_REQ:
+        HandleChatSendReq(clientSocket, reader);
+        break;
+    case EPacketType::CHAT_CHANNEL_LEAVE_REQ:
+        HandleChatLeaveReq(clientSocket, reader);
         break;
 
     default:
@@ -199,12 +207,38 @@ void PacketHandler::HandleLogoutReq(SOCKET clientSocket, BinaryReader& reader)
         uint32_t uid = reader.ReadUInt32();  // UID 직접 추출
 
         // 세션 제거 시도
+        ChatManager::GetInstance().RemoveChatUser(uid);
+        std::cout << "[HandleChatLeaveReq] UID " << uid << " 사용자 정보 제거 완료" << std::endl;
+
         bool success = SessionManager::GetInstance().RemoveUser(uid);
 
         if (success) {
             std::cout << "[HandleLogoutReq] 유저 로그아웃 성공 - UID: " << uid << std::endl;
 
-            // 필요 시: 다른 유저에게 브로드캐스트 알림 처리도 가능
+            std::string nickname = ChatManager::GetInstance().GetNicknameByUID(uid);
+            if (nickname.empty()) {
+                std::cerr << "[HandleLogoutReq] UID로 닉네임을 찾을 수 없습니다. UID: " << uid << std::endl;
+                return;
+            }
+
+            //  브로드캐스트 메시지 구성
+            std::string message = "[" + nickname + "]님이 퇴장하였습니다.";
+            uint64_t timestamp = (uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::system_clock::now().time_since_epoch()).count();
+
+            ChatBroadcastPacket broadcast(uid, timestamp, message);
+            std::vector<char> data = broadcast.Serialize();
+
+            //  모든 클라이언트에게 전송
+            const auto& clients = ChatManager::GetInstance().GetAllClientSockets();
+            for (SOCKET clientSocket : clients) {
+                if (send(clientSocket, data.data(), static_cast<int>(data.size()), 0) == SOCKET_ERROR) {
+                    std::cerr << "[HandleLogoutReq] 클라이언트 소켓 전송 실패: " << clientSocket << std::endl;
+                }
+            }
+
+            std::cout << "[HandleLogoutReq] 퇴장 메시지 브로드캐스트 완료: " << message << std::endl;
+
         }
         else {
             std::cerr << "[HandleLogoutReq] 유저 정보 삭제 실패 - UID: " << uid << std::endl;
@@ -329,5 +363,47 @@ void PacketHandler::HandleChatEnterAck(SOCKET, BinaryReader& reader)
     std::cout << "[HandleChatEnterAck] " << nickname << " 입장 브로드캐스트 완료" << std::endl;
 }
 
+void PacketHandler::HandleChatSendReq(SOCKET, BinaryReader& reader)
+{
+    try {
+        ChatSendReqPacket packet;
+        packet.Deserialize(reader.GetBuffer(), reader.GetBufferSize());
+
+        std::cout << "[HandleChatSendReq] 메시지 수신 - UID: " << packet.GetUID()
+            << ", 메시지: " << packet.GetMessage() << std::endl;
+
+        std::vector<char> data = packet.Serialize(); // 다시 감싸서 직렬화
+        ChatManager::GetInstance().SendPacket(packet); // 또는 SendPacket(packet);
+
+        std::cout << "[HandleChatSendReq] 채팅 서버로 전달 완료\n";
+    }
+    catch (const std::exception& e) {
+        std::cerr << "[HandleChatSendReq] 예외 발생: " << e.what() << std::endl;
+
+        ErrorPacket error(EErrorCode::UNKNOWN_ERROR, "채팅 메시지 처리 중 오류 발생");
+        ChatManager::GetInstance().SendPacket(error);
+    }
+}
+
+void PacketHandler::HandleChatLeaveReq(SOCKET, BinaryReader& reader)
+{
+    try {
+        // 1. 데이터 파싱
+        uint32_t uid = reader.ReadUInt32();
+        uint64_t timestamp = reader.ReadUInt64();
+
+        // 2. 패킷 생성
+        ChatChannelLeaveReqPacket packet(uid, timestamp);
+        auto data = packet.Serialize();
+
+        // 3. 채팅 서버로 전송
+        ChatManager::GetInstance().SendPacket(packet);  // 또는 SendRawPacket(data);
+
+        std::cout << "[HandleChatLeaveReq] 채팅 서버로 CHAT_CHANNEL_LEAVE_REQ 전송 - UID: " << uid << std::endl;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "[HandleChatLeaveReq] 예외 발생: " << e.what() << std::endl;
+    }
+}
 
 

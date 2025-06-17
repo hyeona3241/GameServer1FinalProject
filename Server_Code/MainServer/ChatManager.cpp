@@ -93,6 +93,7 @@ void ChatManager::StopReceiveLoop()
     }
 }
 
+
 void ChatManager::ReceiveLoop()
 {
     constexpr int BUFFER_SIZE = 4096;

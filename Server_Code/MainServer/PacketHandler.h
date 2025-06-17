@@ -19,6 +19,8 @@ private:
     static void HandleChatEnterReq(SOCKET, BinaryReader&);
     static void HandleChatBrpadcast(SOCKET, BinaryReader&);
     static void HandleChatEnterAck(SOCKET, BinaryReader&);
+    static void HandleChatSendReq(SOCKET, BinaryReader&);
+    static void HandleChatLeaveReq(SOCKET, BinaryReader&);
 
     // ... 필요 시 추가
 };

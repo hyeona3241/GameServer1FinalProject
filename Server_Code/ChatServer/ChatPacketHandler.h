@@ -10,5 +10,7 @@ public:
 
 private:
 	static void HandleChatEnterReq(SOCKET, BinaryReader&);
+	static void HandleChatSendReq(SOCKET, BinaryReader&);
+	static void HandleChatLeaveReq(SOCKET, BinaryReader&);
 };
 
