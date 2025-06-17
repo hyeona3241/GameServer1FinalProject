@@ -1,7 +1,2 @@
-﻿  ChatManager.cpp
-  MainServer.cpp
-  NetworkManager.cpp
-  PacketHandler.cpp
-  SessionManager.cpp
-  UIDGenerator.cpp
+﻿  PacketHandler.cpp
   Server.vcxproj -> C:\Users\hongik\Documents\GitHub\GameServer1FinalProject\Server_Code\x64\Debug\MainServer.exe

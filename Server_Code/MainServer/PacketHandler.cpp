@@ -203,42 +203,39 @@ void PacketHandler::HandleLoginFinalize(SOCKET clientSocket, BinaryReader& reade
 void PacketHandler::HandleLogoutReq(SOCKET clientSocket, BinaryReader& reader)
 {
     try {
-        // BinaryReader는 이미 헤더를 읽은 상태라고 가정
-        uint32_t uid = reader.ReadUInt32();  // UID 직접 추출
+        uint32_t uid = reader.ReadUInt32();
 
-        // 세션 제거 시도
+        // 1. 닉네임 먼저 확보
+        std::string nickname = ChatManager::GetInstance().GetNicknameByUID(uid);
+        if (nickname.empty()) {
+            std::cerr << "[HandleLogoutReq] UID로 닉네임을 찾을 수 없습니다. UID: " << uid << std::endl;
+            return;
+        }
+
+        // 2. 브로드캐스트 먼저 처리
+        std::string message = "<" + nickname + "> has left the chat.";
+        uint64_t timestamp = static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch()).count());
+
+        ChatBroadcastPacket broadcast(uid, timestamp, message);
+        std::vector<char> data = broadcast.Serialize();
+
+        const auto& clients = ChatManager::GetInstance().GetAllClientSockets();
+        for (SOCKET sock : clients) {
+            if (send(sock, data.data(), static_cast<int>(data.size()), 0) == SOCKET_ERROR) {
+                std::cerr << "[HandleLogoutReq] 클라이언트 소켓 전송 실패: " << sock << std::endl;
+            }
+        }
+
+        std::cout << "[HandleLogoutReq] 퇴장 메시지 브로드캐스트 완료: " << message << std::endl;
+
+        // 3. 정보 제거는 브로드캐스트 후 진행
         ChatManager::GetInstance().RemoveChatUser(uid);
-        std::cout << "[HandleChatLeaveReq] UID " << uid << " 사용자 정보 제거 완료" << std::endl;
+        std::cout << "[HandleLogoutReq] UID " << uid << " 채팅 사용자 정보 제거 완료" << std::endl;
 
         bool success = SessionManager::GetInstance().RemoveUser(uid);
-
         if (success) {
             std::cout << "[HandleLogoutReq] 유저 로그아웃 성공 - UID: " << uid << std::endl;
-
-            std::string nickname = ChatManager::GetInstance().GetNicknameByUID(uid);
-            if (nickname.empty()) {
-                std::cerr << "[HandleLogoutReq] UID로 닉네임을 찾을 수 없습니다. UID: " << uid << std::endl;
-                return;
-            }
-
-            //  브로드캐스트 메시지 구성
-            std::string message = "[" + nickname + "]님이 퇴장하였습니다.";
-            uint64_t timestamp = (uint64_t)std::chrono::duration_cast<std::chrono::milliseconds>(
-                std::chrono::system_clock::now().time_since_epoch()).count();
-
-            ChatBroadcastPacket broadcast(uid, timestamp, message);
-            std::vector<char> data = broadcast.Serialize();
-
-            //  모든 클라이언트에게 전송
-            const auto& clients = ChatManager::GetInstance().GetAllClientSockets();
-            for (SOCKET clientSocket : clients) {
-                if (send(clientSocket, data.data(), static_cast<int>(data.size()), 0) == SOCKET_ERROR) {
-                    std::cerr << "[HandleLogoutReq] 클라이언트 소켓 전송 실패: " << clientSocket << std::endl;
-                }
-            }
-
-            std::cout << "[HandleLogoutReq] 퇴장 메시지 브로드캐스트 완료: " << message << std::endl;
-
         }
         else {
             std::cerr << "[HandleLogoutReq] 유저 정보 삭제 실패 - UID: " << uid << std::endl;
@@ -254,6 +251,7 @@ void PacketHandler::HandleLogoutReq(SOCKET clientSocket, BinaryReader& reader)
         NetworkManager::GetInstance().SendPacket(clientSocket, error.Serialize());
     }
 }
+
 
 void PacketHandler::HandleChatEnterReq(SOCKET clientSocket, BinaryReader& reader)
 {
